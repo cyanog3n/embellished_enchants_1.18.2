@@ -91,10 +91,10 @@ public class DeathsKnellEnchant extends Enchantment {
 
             if(swing == 0.0f && enchLevel > 0){
 
-                System.out.println("ding");
-
                 double maxHealth = living.getAttributeBaseValue(Attributes.MAX_HEALTH);
-                living.getAttribute(Attributes.MAX_HEALTH).setBaseValue(maxHealth - 1.0d * enchLevel);
+                if(maxHealth != 0){
+                    living.getAttribute(Attributes.MAX_HEALTH).setBaseValue(maxHealth - 1.0d * enchLevel);
+                }
 
             }
         }

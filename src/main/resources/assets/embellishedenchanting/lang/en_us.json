@@ -27,5 +27,8 @@
   "enchantment.embellishedenchanting.shockwave.desc": "Bow shots deal slight AOE damage",
   "enchantment.embellishedenchanting.grappling.desc": "Bow shots pull target entities toward you",
   "enchantment.embellishedenchanting.voiding.desc": "Terrain blocks don't drop anything when mined",
-  "enchantment.embellishedenchanting.deaths_knell.desc": "Attacks deal permanent damage"
+  "enchantment.embellishedenchanting.deaths_knell.desc": "Attacks deal permanent damage",
+
+  //death messages
+  "death.attack.annihilation": "%1$s was annihilated"
 }

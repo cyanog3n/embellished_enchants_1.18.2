@@ -55,6 +55,7 @@ public class AnnihilationEnchant extends Enchantment{
         return super.getDamageBonus(p_44682_, p_44683_);
     }
 
+    public static final DamageSource ANNIHILATION = new DamageSource("annihilation");
 
     @Override
     public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
@@ -71,10 +72,10 @@ public class AnnihilationEnchant extends Enchantment{
                 if(n <= 0.05 + 0.05 * pLevel){
 
                     if(health >= 100 || target instanceof Player){
-                        target.hurt(DamageSource.MAGIC, 50);
+                        target.hurt(ANNIHILATION, 50);
                     }
                     else{
-                        target.hurt(DamageSource.OUT_OF_WORLD.bypassArmor().bypassMagic(), 2147483647);
+                        target.hurt(ANNIHILATION.bypassMagic().bypassArmor(), 2147483647);
                     }
                 }
             }
