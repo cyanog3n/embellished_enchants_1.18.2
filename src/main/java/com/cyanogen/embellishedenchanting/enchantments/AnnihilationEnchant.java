@@ -69,7 +69,7 @@ public class AnnihilationEnchant extends Enchantment{
                 float health = target.getMaxHealth();
                 double n = Math.random();
 
-                if(n <= 0.05 + 0.05 * pLevel){
+                if(n <= 0.01 + 0.01 * pLevel){
 
                     if(health >= 100 || target instanceof Player){
                         target.hurt(ANNIHILATION, 50);
