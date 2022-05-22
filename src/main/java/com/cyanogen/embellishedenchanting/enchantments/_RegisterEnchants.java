@@ -95,6 +95,12 @@ public class _RegisterEnchants {
             new EquipmentSlot[]{ EquipmentSlot.MAINHAND }
     ));
 
+    public static final RegistryObject<Enchantment> INCISIVE = ENCHANTS.register("incisive", () -> new IncisiveEnchant(
+            Rarity(Options.COMMON.IncisiveRarity.get()),
+            EnchantmentCategory.TRIDENT,
+            new EquipmentSlot[]{ EquipmentSlot.MAINHAND }
+    ));
+
     //---APPORT---//
 
     public static final RegistryObject<Enchantment> DEATHS_KNELL = ENCHANTS.register("deaths_knell", () -> new DeathsKnellEnchant(

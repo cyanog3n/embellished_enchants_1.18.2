@@ -6,6 +6,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MobType;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
@@ -60,9 +61,12 @@ public class AnnihilationEnchant extends Enchantment{
     @Override
     public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
 
+        super.doPostAttack(pAttacker, pTarget, pLevel);
+
         if(pAttacker instanceof Player player && !player.level.isClientSide){
 
             float swing = player.getAttackAnim(2.0f);
+            float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
             if(pTarget instanceof LivingEntity target && swing == 0.0f){
 
@@ -72,7 +76,7 @@ public class AnnihilationEnchant extends Enchantment{
                 if(n <= 0.01 + 0.01 * pLevel){
 
                     if(health >= 100 || target instanceof Player){
-                        target.hurt(ANNIHILATION, 50);
+                        target.hurt(ANNIHILATION.setMagic(), attackDamage + 50);
                     }
                     else{
                         target.hurt(ANNIHILATION.bypassMagic().bypassArmor(), 2147483647);

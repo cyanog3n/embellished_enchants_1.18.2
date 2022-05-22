@@ -1,6 +1,5 @@
 package com.cyanogen.embellishedenchanting.config;
 
-import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -22,6 +21,7 @@ public class Options {
         public final ForgeConfigSpec.ConfigValue<Boolean> Stun;
         public final ForgeConfigSpec.ConfigValue<Boolean> Thunderbolt;
         public final ForgeConfigSpec.ConfigValue<Boolean> Voiding;
+        public final ForgeConfigSpec.ConfigValue<Boolean> Incisive;
 
         public final ForgeConfigSpec.ConfigValue<Boolean> DeflagrationCurse;
 
@@ -35,6 +35,7 @@ public class Options {
         public final ForgeConfigSpec.ConfigValue<String> StunRarity;
         public final ForgeConfigSpec.ConfigValue<String> ThunderboltRarity;
         public final ForgeConfigSpec.ConfigValue<String> VoidingRarity;
+        public final ForgeConfigSpec.ConfigValue<String> IncisiveRarity;
 
         public final ForgeConfigSpec.ConfigValue<String> DeflagrationCurseRarity;
 
@@ -112,6 +113,14 @@ public class Options {
                     .define("VoidingEnchantEnabled", defaultState);
             this.VoidingRarity = builder.comment("Set rarity of the Voiding Enchantment","Accepted values: COMMON, UNCOMMON, RARE, VERY_RARE")
                     .define("VoidingRarity","COMMON");
+            builder.pop();
+
+            //all
+            builder.push("Incisive");
+            this.Incisive = builder.comment("Enable or disable the Incisive Enchantment")
+                    .define("IncisiveEnchantEnabled", defaultState);
+            this.IncisiveRarity = builder.comment("Set rarity of the Incisive Enchantment","Accepted values: COMMON, UNCOMMON, RARE, VERY_RARE")
+                    .define("IncisiveRarity","COMMON");
             builder.pop();
 
             //loot only

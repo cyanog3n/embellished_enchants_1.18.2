@@ -9,14 +9,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
-
-import java.util.Random;
 
 public class ShatteringEnchant extends Enchantment{
 
@@ -62,18 +61,20 @@ public class ShatteringEnchant extends Enchantment{
         return 3;
     }
 
+    @Override
+    public boolean canEnchant(ItemStack stack) {
+
+        return isEnabled && this.canApplyAtEnchantingTable(stack) && stack.isDamageableItem();
+    }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
 
-        if(isEnabled && stack.getItem() instanceof AxeItem){
+        if(stack.getItem() instanceof AxeItem || stack.getItem() instanceof TridentItem){
             return true;
         }
-        else if(isEnabled){
-            return stack.canApplyAtEnchantingTable(this);
-        }
         else{
-            return false;
+            return super.canApplyAtEnchantingTable(stack);
         }
     }
 
@@ -81,31 +82,22 @@ public class ShatteringEnchant extends Enchantment{
     public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
 
         ItemStack heldItem = pAttacker.getMainHandItem();
-        float attackDamage = 0f;
-
-        if(heldItem.getItem() instanceof SwordItem sword){
-            attackDamage = sword.getDamage() + 1;
-        }
-        else if(heldItem.getItem() instanceof AxeItem axe){
-            attackDamage = axe.getAttackDamage() + 1;
-        }
-
-        float extraDamage = attackDamage * pLevel / 3;
 
         int durability = heldItem.getMaxDamage();
-        int damage = (durability / 300) * pLevel;
+        int itemDamage = (durability / 240) * pLevel;
 
-        if(pAttacker instanceof Player player && !pAttacker.level.isClientSide) {
+        if(pAttacker instanceof Player player && !pAttacker.level.isClientSide && pTarget instanceof LivingEntity target) {
             float swing = player.getAttackAnim(2.0f);
 
-            if (Math.random() <= (0.05 * pLevel + 0.05) && swing == 0.0f) {
-                pTarget.hurt(DamageSource.mobAttack(pAttacker), extraDamage);
+            float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+            float extraDamage = attackDamage * pLevel / 3;
 
-                if (durability - heldItem.getDamageValue() >= damage) {
-                    heldItem.hurtAndBreak(damage, pAttacker, LivingEntity::stopUsingItem);
-                } else {
-                    heldItem.hurt(damage, new Random(), null);
-                }
+            float finalDamage = attackDamage + extraDamage;
+
+            if(Math.random() <= (0.05 * pLevel + 0.05) && swing == 0.0f) {
+
+                target.hurt(DamageSource.playerAttack(player), finalDamage);
+                heldItem.hurtAndBreak(itemDamage, pAttacker, LivingEntity::stopUsingItem);
 
             }
         }
@@ -113,10 +105,12 @@ public class ShatteringEnchant extends Enchantment{
         //occasionally deals increased damage at the cost of a portion of durability
         //higher levels increase damage dealt, increase frequency, but increase item damage
 
-        //lv1 - 10% chance, deals 33% more damage, 0.33% of durability
-        //lvl2 - 15% chance, deals 66% more damage, 0.66% of durability
-        //lvl3 - 20% chance, deals 100% more damage, 1% of durability
+        //lv1 - 10% chance, deals 33% more damage, 0.4% of durability
+        //lvl2 - 15% chance, deals 66% more damage, 0.83% of durability
+        //lvl3 - 20% chance, deals 100% more damage, 1.2% of durability
 
     }
+
+
 
 }

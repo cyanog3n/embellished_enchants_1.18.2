@@ -8,6 +8,7 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.Level;
@@ -44,22 +45,18 @@ public class ShockwaveEnchant extends Enchantment{
     }
 
     @Override
-    public boolean canEnchant(ItemStack pStack) {
-        if(pStack.getItem() instanceof CrossbowItem){
-            return true;
-        }
-        else{
-            return canApplyAtEnchantingTable(pStack);
-        }
+    public boolean canEnchant(ItemStack stack) {
+
+        return isEnabled && this.canApplyAtEnchantingTable(stack);
     }
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
-        if(isEnabled){
-            return stack.canApplyAtEnchantingTable(this);
+        if(stack.getItem() instanceof CrossbowItem || stack.getItem() instanceof TridentItem){
+            return true;
         }
         else{
-            return false;
+            return super.canApplyAtEnchantingTable(stack);
         }
     }
 
@@ -81,7 +78,6 @@ public class ShockwaveEnchant extends Enchantment{
                     posT.getZ() + radius);
 
             List<Entity> list = level.getEntities(pTarget, area);
-
 
             if(source != null && source.isProjectile()){
 

@@ -5,6 +5,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
@@ -60,10 +61,8 @@ public class HexEnchant extends Enchantment{
 
     }
 
-
     @Override
     public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
-
 
         if(pAttacker instanceof Player player && !pAttacker.level.isClientSide){
 
@@ -72,13 +71,14 @@ public class HexEnchant extends Enchantment{
             if(pTarget instanceof LivingEntity target && swing == 0.0f){
 
                 float health = target.getMaxHealth();
-                float damage = 0.015f * health * pLevel;
+                float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+                float hexDamage = 0.01f * health * pLevel;
 
-                if(damage <= 20){
-                    target.hurt(DamageSource.playerAttack(player), damage);
+                if(hexDamage <= 20){
+                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + hexDamage);
                 }
                 else{
-                    target.hurt(DamageSource.playerAttack(player), 20);
+                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + 20);
                 }
 
             }
@@ -87,13 +87,14 @@ public class HexEnchant extends Enchantment{
                 //if entity is a component of a multipart eg. enderdragon
 
                 float health = target.getMaxHealth();
-                float damage = 0.015f * health * pLevel;
+                float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+                float hexDamage = 0.01f * health * pLevel;
 
-                if(damage <= 20){
-                    target.hurt(DamageSource.playerAttack(player), damage);
+                if(hexDamage <= 20){
+                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + hexDamage);
                 }
                 else{
-                    target.hurt(DamageSource.playerAttack(player), 20);
+                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + 20);
                 }
 
             }
