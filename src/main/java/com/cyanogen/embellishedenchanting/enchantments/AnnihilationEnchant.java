@@ -1,15 +1,18 @@
 package com.cyanogen.embellishedenchanting.enchantments;
 
 import com.cyanogen.embellishedenchanting.config.Options;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.MobType;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 public class AnnihilationEnchant extends Enchantment{
 
@@ -51,40 +54,43 @@ public class AnnihilationEnchant extends Enchantment{
 
     }
 
-    @Override
-    public float getDamageBonus(int p_44682_, MobType p_44683_) {
-        return super.getDamageBonus(p_44682_, p_44683_);
-    }
-
     public static final DamageSource ANNIHILATION = new DamageSource("annihilation");
 
-    @Override
-    public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
+    public static void onAttack(LivingAttackEvent event){
 
-        super.doPostAttack(pAttacker, pTarget, pLevel);
+        Entity attacker = event.getSource().getEntity();
+        LivingEntity target = event.getEntityLiving();
 
-        if(pAttacker instanceof Player player && !player.level.isClientSide){
-
+        if(attacker instanceof Player player && !player.level.isClientSide){
             float swing = player.getAttackAnim(2.0f);
-            float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
 
-            if(pTarget instanceof LivingEntity target && swing == 0.0f){
+            ItemStack heldItem = player.getMainHandItem();
+            int enchLevel = EnchantmentHelper.getItemEnchantmentLevel(_RegisterEnchants.ANNIHILATION.get(), heldItem);
+
+            if(swing == 0.0f && enchLevel > 0){
 
                 float health = target.getMaxHealth();
-                double n = Math.random();
 
-                if(n <= 0.01 + 0.01 * pLevel){
+                if(Math.random() <= 0.01 * enchLevel) {
 
-                    if(health >= 100 || target instanceof Player){
-                        target.hurt(ANNIHILATION.setMagic(), attackDamage + 50);
-                    }
-                    else{
+                    if (health >= 100 || target instanceof Player) {
+                        target.hurt(ANNIHILATION.setMagic(), 50);
+                        target.invulnerableTime = 0;
+
+                    } else {
                         target.hurt(ANNIHILATION.bypassMagic().bypassArmor(), 2147483647);
                     }
+
+                    ServerLevel level = (ServerLevel) attacker.level;
+                    level.sendParticles(
+                            ParticleTypes.SOUL_FIRE_FLAME,
+                            target.getX(), target.getY() + 1, target.getZ(), 24,
+                            0.2, 0.2, 0.2, 0.2);
+
                 }
             }
-
         }
-
     }
+
+
 }

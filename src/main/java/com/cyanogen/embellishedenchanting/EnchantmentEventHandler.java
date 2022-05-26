@@ -1,9 +1,6 @@
 package com.cyanogen.embellishedenchanting;
 
-import com.cyanogen.embellishedenchanting.enchantments.DeathsKnellEnchant;
-import com.cyanogen.embellishedenchanting.enchantments.DeflagrationCurseEnchant;
-import com.cyanogen.embellishedenchanting.enchantments.ImmortalEnchant;
-import com.cyanogen.embellishedenchanting.enchantments.VoidingEnchant;
+import com.cyanogen.embellishedenchanting.enchantments.*;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -43,6 +40,9 @@ public class EnchantmentEventHandler {
     @SubscribeEvent
     public void onLivingAttack(LivingAttackEvent event){
         DeathsKnellEnchant.onAttack(event);
+        AnnihilationEnchant.onAttack(event);
+        ShatteringEnchant.onAttack(event);
+        HexEnchant.onAttack(event);
     }
 
     @SubscribeEvent

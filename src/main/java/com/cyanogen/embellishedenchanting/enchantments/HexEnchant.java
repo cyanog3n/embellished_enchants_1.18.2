@@ -5,13 +5,13 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.Enchantments;
-import net.minecraftforge.entity.PartEntity;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 public class HexEnchant extends Enchantment{
 
@@ -61,46 +61,32 @@ public class HexEnchant extends Enchantment{
 
     }
 
-    @Override
-    public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
+    public static void onAttack(LivingAttackEvent event){
 
-        if(pAttacker instanceof Player player && !pAttacker.level.isClientSide){
+        Entity attacker = event.getSource().getEntity();
+        LivingEntity target = event.getEntityLiving();
+
+        if(attacker instanceof Player player && !attacker.level.isClientSide){
 
             float swing = player.getAttackAnim(2.0f);
 
-            if(pTarget instanceof LivingEntity target && swing == 0.0f){
+            ItemStack heldItem = player.getMainHandItem();
+            int enchLevel = EnchantmentHelper.getItemEnchantmentLevel(_RegisterEnchants.HEX.get(), heldItem);
+
+            if(swing == 0.0f && enchLevel > 0){
 
                 float health = target.getMaxHealth();
-                float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
-                float hexDamage = 0.01f * health * pLevel;
+                float hexDamage = 0.008f * health * enchLevel;
 
                 if(hexDamage <= 20){
-                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + hexDamage);
+                    target.hurt(DamageSource.MAGIC, hexDamage);
                 }
                 else{
-                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + 20);
+                    target.hurt(DamageSource.MAGIC.setMagic(), 20);
                 }
+                target.invulnerableTime = 0;
 
             }
-            else if(pTarget instanceof PartEntity<?> t && t.getParent() instanceof LivingEntity target && swing == 0.0f){
-
-                //if entity is a component of a multipart eg. enderdragon
-
-                float health = target.getMaxHealth();
-                float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
-                float hexDamage = 0.01f * health * pLevel;
-
-                if(hexDamage <= 20){
-                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + hexDamage);
-                }
-                else{
-                    target.hurt(DamageSource.playerAttack(player).setMagic(), attackDamage + 20);
-                }
-
-            }
-
         }
-
-
     }
 }

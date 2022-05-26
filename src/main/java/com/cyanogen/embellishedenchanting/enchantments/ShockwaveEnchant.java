@@ -8,7 +8,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.level.Level;
@@ -52,7 +51,7 @@ public class ShockwaveEnchant extends Enchantment{
 
     @Override
     public boolean canApplyAtEnchantingTable(ItemStack stack) {
-        if(stack.getItem() instanceof CrossbowItem || stack.getItem() instanceof TridentItem){
+        if(stack.getItem() instanceof CrossbowItem){
             return true;
         }
         else{
@@ -64,6 +63,7 @@ public class ShockwaveEnchant extends Enchantment{
     public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
 
         if(pTarget instanceof LivingEntity living){
+
             DamageSource source = living.getLastDamageSource();
             Level level = living.getLevel();
             double radius = 1.5 + 0.5 * pLevel;

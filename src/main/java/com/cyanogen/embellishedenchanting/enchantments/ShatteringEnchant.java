@@ -2,9 +2,11 @@ package com.cyanogen.embellishedenchanting.enchantments;
 
 import com.cyanogen.embellishedenchanting.config.Options;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -16,6 +18,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
 public class ShatteringEnchant extends Enchantment{
 
@@ -62,6 +67,11 @@ public class ShatteringEnchant extends Enchantment{
     }
 
     @Override
+    protected boolean checkCompatibility(Enchantment enchant) {
+        return super.checkCompatibility(enchant) && !enchant.equals(Enchantments.MENDING);
+    }
+
+    @Override
     public boolean canEnchant(ItemStack stack) {
 
         return isEnabled && this.canApplyAtEnchantingTable(stack) && stack.isDamageableItem();
@@ -78,39 +88,47 @@ public class ShatteringEnchant extends Enchantment{
         }
     }
 
-    @Override
-    public void doPostAttack(LivingEntity pAttacker, Entity pTarget, int pLevel) {
+    public static void onAttack(LivingAttackEvent event){
 
-        ItemStack heldItem = pAttacker.getMainHandItem();
+        Entity attacker = event.getSource().getEntity();
+        LivingEntity target = event.getEntityLiving();
 
-        int durability = heldItem.getMaxDamage();
-        int itemDamage = (durability / 240) * pLevel;
-
-        if(pAttacker instanceof Player player && !pAttacker.level.isClientSide && pTarget instanceof LivingEntity target) {
+        if(attacker instanceof Player player && !player.level.isClientSide){
             float swing = player.getAttackAnim(2.0f);
 
-            float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
-            float extraDamage = attackDamage * pLevel / 3;
+            ItemStack heldItem = player.getMainHandItem();
+            int enchLevel = EnchantmentHelper.getItemEnchantmentLevel(_RegisterEnchants.SHATTERING.get(), heldItem);
 
-            float finalDamage = attackDamage + extraDamage;
+            if(enchLevel != 0 && Math.random() <= (0.05 * enchLevel + 0.05) && swing == 0.0f) {
 
-            if(Math.random() <= (0.05 * pLevel + 0.05) && swing == 0.0f) {
+                float attackDamage = (float)player.getAttributeValue(Attributes.ATTACK_DAMAGE);
+                float extraDamage = attackDamage * enchLevel / 3;
 
-                target.hurt(DamageSource.playerAttack(player), finalDamage);
-                heldItem.hurtAndBreak(itemDamage, pAttacker, LivingEntity::stopUsingItem);
+                int durability = heldItem.getMaxDamage();
+                int itemDamage = (durability / 240) * enchLevel;
 
+                target.hurt(DamageSource.GENERIC, extraDamage);
+                target.invulnerableTime = 0;
+
+                heldItem.hurtAndBreak(itemDamage, player, LivingEntity::stopUsingItem);
+
+                //type, xpos, ypos, zpos, count, xoffset, yoffset, zoffset, speed
+                ServerLevel level = (ServerLevel) player.level;
+
+                level.sendParticles(
+                        ParticleTypes.SCRAPE,
+                        target.getX(), target.getY() + 1, target.getZ(), 16,
+                        0, 0, 0, 10);
             }
         }
 
-        //occasionally deals increased damage at the cost of a portion of durability
-        //higher levels increase damage dealt, increase frequency, but increase item damage
-
-        //lv1 - 10% chance, deals 33% more damage, 0.4% of durability
-        //lvl2 - 15% chance, deals 66% more damage, 0.83% of durability
-        //lvl3 - 20% chance, deals 100% more damage, 1.2% of durability
-
     }
 
+    //occasionally deals increased damage at the cost of a portion of durability
+    //higher levels increase damage dealt, increase frequency, but increase item damage
 
+    //lv1 - 10% chance, deals 33% more damage, 0.4% of durability
+    //lvl2 - 15% chance, deals 66% more damage, 0.83% of durability
+    //lvl3 - 20% chance, deals 100% more damage, 1.2% of durability
 
 }
