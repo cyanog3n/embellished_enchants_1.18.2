@@ -8,13 +8,11 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ElytraItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.event.entity.player.PlayerDestroyItemEvent;
@@ -81,7 +79,7 @@ public class ImmortalEnchant extends Enchantment {
             if(mainhand.is(Items.TOTEM_OF_UNDYING) || offhand.is(Items.TOTEM_OF_UNDYING)){
 
                 ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK,1);
-                stack.enchant(_RegisterEnchants.IMMORTAL.get(), 1);
+                EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(_RegisterEnchants.IMMORTAL.get(), 1));
 
                 ServerLevel server = (ServerLevel) level;
                 if(Math.random() <= 0.35d){

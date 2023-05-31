@@ -90,10 +90,11 @@ public class ShatteringEnchant extends Enchantment{
 
     public static void onAttack(LivingAttackEvent event){
 
-        Entity attacker = event.getSource().getEntity();
+        DamageSource source = event.getSource();
+        Entity attacker = source.getEntity();
         LivingEntity target = event.getEntityLiving();
 
-        if(attacker instanceof Player player && !player.level.isClientSide){
+        if(attacker instanceof Player player && source.getMsgId().equals("player") && !player.level.isClientSide){
             float swing = player.getAttackAnim(2.0f);
 
             ItemStack heldItem = player.getMainHandItem();
@@ -107,7 +108,7 @@ public class ShatteringEnchant extends Enchantment{
                 int durability = heldItem.getMaxDamage();
                 int itemDamage = (durability / 240) * enchLevel;
 
-                target.hurt(DamageSource.GENERIC, extraDamage);
+                target.hurt(DamageSource.playerAttack(player), extraDamage);
                 target.invulnerableTime = 0;
 
                 heldItem.hurtAndBreak(itemDamage, player, LivingEntity::stopUsingItem);

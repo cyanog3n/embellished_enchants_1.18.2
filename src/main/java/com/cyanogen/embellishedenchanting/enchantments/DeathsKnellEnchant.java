@@ -14,13 +14,11 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.EnchantmentCategory;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.event.RenderTooltipEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -142,7 +140,8 @@ public class DeathsKnellEnchant extends Enchantment {
                 && Options.COMMON.DeathsKnell.get()){
 
             ItemStack stack = new ItemStack(Items.ENCHANTED_BOOK,1);
-            stack.enchant(_RegisterEnchants.DEATHS_KNELL.get(), (int) Math.floor(Math.random() * 3) + 1);
+            EnchantedBookItem.addEnchantment(stack, new EnchantmentInstance(_RegisterEnchants.DEATHS_KNELL.get(),
+                    (int) Math.floor(Math.random() * 3) + 1));
 
             ServerLevel server = (ServerLevel) level;
             server.addFreshEntity(new ItemEntity(server, pos.getX(), pos.getY(), pos.getZ(), stack, 0,0,0));

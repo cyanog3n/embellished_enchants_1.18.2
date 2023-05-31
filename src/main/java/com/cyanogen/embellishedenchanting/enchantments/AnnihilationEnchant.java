@@ -54,14 +54,13 @@ public class AnnihilationEnchant extends Enchantment{
 
     }
 
-    public static final DamageSource ANNIHILATION = new DamageSource("annihilation");
-
     public static void onAttack(LivingAttackEvent event){
 
-        Entity attacker = event.getSource().getEntity();
+        DamageSource source = event.getSource();
+        Entity attacker = source.getEntity();
         LivingEntity target = event.getEntityLiving();
 
-        if(attacker instanceof Player player && !player.level.isClientSide){
+        if(attacker instanceof Player player && source.getMsgId().equals("player") && !player.level.isClientSide){
             float swing = player.getAttackAnim(2.0f);
 
             ItemStack heldItem = player.getMainHandItem();
@@ -71,14 +70,14 @@ public class AnnihilationEnchant extends Enchantment{
 
                 float health = target.getMaxHealth();
 
-                if(Math.random() <= 0.01 * enchLevel) {
+                if(/*Math.random() <= 0.01 * enchLevel*/ Math.random() <= 0.5) {
 
                     if (health >= 100 || target instanceof Player) {
-                        target.hurt(ANNIHILATION.setMagic(), 50);
+                        target.hurt(DamageSource.playerAttack(player).setMagic(), 50);
                         target.invulnerableTime = 0;
 
                     } else {
-                        target.hurt(ANNIHILATION.bypassMagic().bypassArmor(), 2147483647);
+                        target.hurt(DamageSource.playerAttack(player).bypassMagic().bypassArmor(), 2147483647);
                     }
 
                     ServerLevel level = (ServerLevel) attacker.level;
